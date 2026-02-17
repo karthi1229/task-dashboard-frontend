@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+const API_URL = "https://task-dashboard-backend-faro.onrender.com";
+
 export default function Dashboard() {
   const router = useRouter();
 
@@ -21,12 +23,12 @@ export default function Dashboard() {
   const fetchProfile = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/auth/profile",
+        `${API_URL}/api/auth/profile`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUser(res.data);
     } catch (err) {
-      console.error("Profile fetch failed");
+      console.error("Profile fetch failed", err);
     }
   };
 
@@ -36,12 +38,12 @@ export default function Dashboard() {
   const fetchTasks = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/tasks",
+        `${API_URL}/api/tasks`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTasks(res.data);
     } catch (err) {
-      console.error("Task fetch failed");
+      console.error("Task fetch failed", err);
     }
   };
 
@@ -71,7 +73,7 @@ export default function Dashboard() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/tasks",
+        `${API_URL}/api/tasks`,
         { title },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -79,7 +81,7 @@ export default function Dashboard() {
       setTasks([res.data, ...tasks]);
       setTitle("");
     } catch (err) {
-      console.error("Add task failed");
+      console.error("Add task failed", err);
     }
   };
 
@@ -92,14 +94,14 @@ export default function Dashboard() {
 
     try {
       await axios.put(
-        `http://localhost:5000/api/tasks/${id}`,
+        `${API_URL}/api/tasks/${id}`,
         { title: newTitle },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       fetchTasks();
     } catch (err) {
-      console.error("Update failed");
+      console.error("Update failed", err);
     }
   };
 
@@ -109,13 +111,13 @@ export default function Dashboard() {
   const deleteTask = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/tasks/${id}`,
+        `${API_URL}/api/tasks/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       setTasks(tasks.filter((t) => t.id !== id));
     } catch (err) {
-      console.error("Delete failed");
+      console.error("Delete failed", err);
     }
   };
 
@@ -142,7 +144,6 @@ export default function Dashboard() {
   return (
     <div className="container mt-5">
 
-      {/* HEADER */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h3>Your Tasks</h3>
@@ -156,7 +157,6 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* PROFILE CARD */}
       <div className="card p-3 mb-4">
         <h5>Profile</h5>
         <div className="d-flex justify-content-between align-items-center">
@@ -172,7 +172,7 @@ export default function Dashboard() {
               if (!newName) return;
 
               await axios.put(
-                "http://localhost:5000/api/auth/profile",
+                `${API_URL}/api/auth/profile`,
                 { name: newName },
                 { headers: { Authorization: `Bearer ${token}` } }
               );
@@ -185,7 +185,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ADD TASK */}
       <div className="input-group mb-3">
         <input
           className="form-control"
@@ -198,14 +197,12 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* SEARCH */}
       <input
         className="form-control mb-3"
         placeholder="Search..."
         onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* TASK LIST */}
       <ul className="list-group">
         {filteredTasks.map((task) => (
           <li

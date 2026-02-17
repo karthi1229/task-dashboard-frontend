@@ -17,7 +17,8 @@ export default function Register() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/auth/register", form);
+     axios.post("https://task-dashboard-backend-faro.onrender.com/api/auth/register", form);
+
       router.push("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
